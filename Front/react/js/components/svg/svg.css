@@ -1,0 +1,8 @@
+svg{
+    --c-svg: #000;
+    --px: 32px;
+
+    fill:var(--c-svg);
+    width: var(--px);
+    height: var(--px);
+}
