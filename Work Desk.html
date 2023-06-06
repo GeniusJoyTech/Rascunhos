@@ -8,12 +8,21 @@
     <title>Mesa de trabalho</title>
     <style>
         button {
-           --c-btn-border: #000;
-           --c-btn-onMouseOver: #d9d9d9;
+            --c-btn-border: #000;
+            --c-btn-hover: #d9d9d9;
             all: unset;
-            border: solid 1px var(--c-btn-border);
+            border: groove 1px var(--c-btn-border);
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            padding: 2px;
+        }
+
+        button:hover {
+            background-color: var(--c-btn-hover);
+        }
+
+        button:active {
+            box-shadow: inset 2px 4px 2px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
