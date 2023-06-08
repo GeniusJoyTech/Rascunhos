@@ -29,8 +29,12 @@
 }
 
 .nl {
+    width: 100%;
     display: flex;
 }
 #cep{
     margin-right: 40px;
+}
+.conteudo{
+    width: 100%;
 }

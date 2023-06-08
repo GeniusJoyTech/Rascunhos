@@ -3,7 +3,7 @@ function Loja(props) {
         <div className="lj">
             <div className="nl">
                 <div className="ck">                </div>
-                <div>
+                <div className="conteudo">
                     <div>
                         <p>{props.loja}</p>
                         <hr />
