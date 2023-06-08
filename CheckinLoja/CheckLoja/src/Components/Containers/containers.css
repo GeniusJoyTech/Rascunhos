@@ -1,0 +1,36 @@
+.destaque {
+    width: 100bw;
+    background-color: #d9d9d9;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.destaque hr {
+    border: 1px solid black;
+    border-radius: 1px;
+    margin: 0px;
+}
+
+.destaque p {
+    margin: 5px 0px 0px 0px;
+}
+
+.lj {
+    width: 100%;
+}
+
+.ck {
+    background-color: #ffffff;
+    border: 1px solid;
+    border-radius: 5px;
+    width: 25px;
+    height: 25px;
+    margin-right: 8px;
+}
+
+.nl {
+    display: flex;
+}
+#cep{
+    margin-right: 40px;
+}
