@@ -1,7 +1,7 @@
 function Loja(props) {
     return (
         <div className="lj">
-            <div className="nl">
+            <div className="d_flex">
                 <div className="ck">                </div>
                 <div className="conteudo">
                     <div>
@@ -9,7 +9,7 @@ function Loja(props) {
                         <hr />
                     </div>
                     <p>{props.End}</p>
-                    <div className="nl">
+                    <div className="d_flex">
                     <p id="cep">{props.Cep}</p>
                     <p>{props.Num}</p>
 
