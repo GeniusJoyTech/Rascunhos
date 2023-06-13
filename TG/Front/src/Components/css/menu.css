@@ -1,0 +1,92 @@
+@import url("variaveis.css");
+
+* {
+    margin: var(--t-px-0);
+    padding: var(--t-px-0);
+}
+
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: var(--t-vh-100);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--tr-suave);
+    background-color: var(--c-contraste);
+
+}
+#volta{
+    display: none;
+}
+.f {
+    z-index: 2;
+}
+
+.a {
+    z-index: 1;
+    left: calc(-1*var(--t-vw-100));
+
+}
+
+@media screen and (max-width: var(--t-px-320)) {
+
+    .f {
+        width: var(t-vw-20);
+    }
+
+    .a {
+        width: var(t-vw-100);
+    }
+}
+
+@media screen and (max-width: calc(var(--t-px-320) * 2)) {}
+
+.f {
+    width: var(--t-vw-20);
+}
+
+.a {
+    width: var(--t-vw-100);
+
+}
+
+.vazio {
+    width: var(--t-px-80);
+    height: var(--t-px-80);
+}
+
+
+@media screen and (min-width: calc(var(--t-px-320) * 2)) {
+    .f {
+        width: var(--t-vw-8);
+    }
+
+    .a {
+        z-index: 0;
+        width: var(--t-vw-60);
+    }
+
+    .vazio {
+        width: var(--t-px-72);
+        height: var(--t-px-72);
+    }
+}
+
+@media screen and (min-width: 960px) {
+    .f {
+        width: var(--t-vw-8);
+    }
+
+    .a {
+        z-index: 0;
+        width: var(--t-vw-40);
+    }
+
+
+    .vazio {
+        width: var(--t-px-92);
+        height: var(--t-px-92);
+    }
+}

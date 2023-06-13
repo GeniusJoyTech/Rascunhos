@@ -1,0 +1,56 @@
+
+:root{
+    --c-fundo: #F3F8FF;
+    --c-contraste: #FFFFFF;
+    --c-svg: #0007A7;
+    --c-letras: #001357;
+    --c-botoes: #0007A7;
+    --c-res-1:#b251aa;
+    --c-res-2:#dbd9a6;
+    --c-res-3:#aaa;
+    --c-res-4:#aaa;
+    --c-res-5:#aaa;
+    --c-res-6:#aaa;
+    --c-res-7:#aaa;
+    --c-res-8:#aaa;
+    --c-res-9:#aaa;
+    --c-res-a:#aaa;
+    --c-res-b:#aaa;
+ 
+    --f-fam-1: sans-serif;
+    --f-fam-2: monospace;
+    --f-fam-3: courier; 
+    /*
+    --f-fam-2: ; --f-fam-3: ; --f-fam-4: ; --f-fam-5: ; --f-fam-6: ; --f-fam-7: ; --f-fam-8: ; --f-fam-a: ;
+    */
+
+    --t-px-0: 0px;
+    --t-px-1: 1px;
+    --t-px-5: 5px;
+    --t-px-10: 10px;
+    --t-px-25: 25px;
+    --t-px-50: 50px;
+    --t-px-72: 72px;
+    --t-px-80: 80px;
+    --t-px-92: 92px;
+    --t-px-100: 100px;
+    --t-px-320: 320px;
+    
+    
+    --t-vh-100: 100vh;
+    
+    --t-vw-8: 8vw;
+    --t-vw-20: 20vw;
+    --t-vw-40: 40vw;
+    --t-vw-60: 60vw;
+    --t-vw-100: 100vw;
+    --t-vw-100: 100vw;
+    
+    --t-prc-100: 100%;
+
+    --tr-suave: all 1s ease;
+}
+*{
+    font-family: var(--f-fam-1);
+    font-size: var(--t-px-25);
+}

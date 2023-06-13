@@ -1,0 +1,75 @@
+@import url("variaveis.css");
+
+/* Define a cor de preenchimento de um ícone SVG */
+svg path {
+    fill: var(--c-svg);
+    /* Define a cor como vermelha */
+}
+
+/* Define a cor do contorno de um ícone SVG */
+svg path {
+    stroke: var(--c-svg);
+    /* Define a cor como preta */
+    stroke-width: 2px;
+    /* Define a largura do contorno como 2 pixels */
+}
+
+/* Define a largura e a altura de um ícone SVG */
+svg {
+    transition: var(--tr-suave);
+}
+
+@media screen and (max-width: 640px) {
+    svg {
+        width: 80px;
+        /* Define a largura como 50 pixels */
+        height: 80px;
+        /* Define a altura como 50 pixels */
+    }
+
+    .Logo {
+        width: 40vw;
+        /* Define a largura como 50 pixels */
+        height: 40vw;
+        /* Define a altura como 50 pixels */
+    }
+
+}
+
+@media screen and (min-width: 640px) {
+    svg {
+        width: 72px;
+        /* Define a largura como 50 pixels */
+        height: 72px;
+        /* Define a altura como 50 pixels */
+    }
+
+    .Logo {
+        width: 512px;
+        /* Define a largura como 50 pixels */
+        height: 512px;
+        /* Define a altura como 50 pixels */
+    }
+
+
+}
+
+@media screen and (min-width: 960px) {
+    svg {
+        width: 92px;
+        /* Define a largura como 50 pixels */
+        height: 92px;
+        /* Define a altura como 50 pixels */
+    }
+
+    .Logo {
+        width: 700px;
+        /* Define a largura como 50 pixels */
+        height: 700px;
+        /* Define a altura como 50 pixels */
+    }
+}
+
+.oculto {
+    display: none;
+}

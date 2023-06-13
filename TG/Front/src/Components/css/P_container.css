@@ -1,0 +1,42 @@
+@import url('variaveis.css');
+
+main {
+    overflow: hidden;
+    margin-top: 50px;
+    height: calc(100vh - 50px);
+}
+.container {
+    width: var(--t-prc-100);
+    height: var(--t-prc-100);
+    overflow-y: auto;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+
+@media screen and (max-width: calc(var(--t-px-320) * 2)) {}
+
+main {
+    border-top-left-radius: var(--t-px-25);
+    border-bottom-left-radius: var(--t-px-25);
+    margin-left: var(--t-vw-20);
+    width: calc(var(--t-vw-100) - var(--t-vw-20));
+
+}
+
+
+@media screen and (min-width: calc(var(--t-px-320) * 2)) {
+    main {        
+        margin-left: var(--t-vw-8);
+        width: calc(var(--t-vw-100) - var(--t-vw-8));
+        }
+
+}
+
+@media screen and (min-width: 960px) {
+    main {
+        margin-left: var(--t-vw-8);
+        width: calc(var(--t-vw-100) - var(--t-vw-8));
+    }
+
+}

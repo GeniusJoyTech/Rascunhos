@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Back",
+        "type": "shell",
+        "command": "echo 'Back' && cd Back && nodemon index.js",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Front",
+        "type": "shell",
+        "command": "echo 'Front'  && cd Front && npm run dev",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+  

@@ -1,0 +1,7 @@
+@import url("variaveis.css");
+button {
+    all: unset;
+    border: var(--t-px-1) solid var(--c-botoes);
+    border-radius: var(--t-px-5);
+    margin: 1px;
+}
