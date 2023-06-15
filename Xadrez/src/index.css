@@ -1,0 +1,5 @@
+@import url(../public/config/config.css);
+
+body{
+  background-color: var(--c-fundo);
+}

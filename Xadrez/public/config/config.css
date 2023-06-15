@@ -1,0 +1,18 @@
+:root{
+    --c-fundo: #d9d9d9;
+    --c-casa1: #ffffff;
+    --c-casa2: #000000;
+    --c-peca1: #ff0000;
+    --c-peca2: #0004ff;
+    --c-1: #000;
+    --c-2: #000;
+    --c-3: #000;
+
+
+    --tamW-1por8: 12.5vw;
+}
+*{
+    margin: 0;
+    padding: 0;
+    bottom: 0;
+}

@@ -1,8 +1,3 @@
-import Administrador from './js/administrador.js';
-import Atende from './js/atende.js';
-import Atividade from './js/atividade.js';
-import Loja from './js/loja.js';
-import Roteiro from './js/roteiro.js';
 
 
 import express from 'express';

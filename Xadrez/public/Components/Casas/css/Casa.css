@@ -1,0 +1,14 @@
+@import '../../../config/config.css';
+
+.Casa{
+    width: var(--tamW-1por8);
+    height: var(--tamW-1por8);
+}
+
+.Preta{
+  background-color: var(--c-casa1);  
+}
+.Branca{
+    
+  background-color: var(--c-casa2);
+}
