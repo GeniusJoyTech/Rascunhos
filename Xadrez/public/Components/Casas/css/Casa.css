@@ -1,14 +1,26 @@
 @import '../../../config/config.css';
 
-.Casa{
+@media (orientation: portrait) {
+
+  .Casa {
     width: var(--tamW-1por8);
     height: var(--tamW-1por8);
+  }
 }
 
-.Preta{
-  background-color: var(--c-casa1);  
+@media (orientation: landscape) {
+  .Casa {
+    width: var(--tamH-1por8);
+    height: var(--tamH-1por8);
+  }
 }
-.Branca{
-    
+
+
+.Preta {
+  background-color: var(--c-casa1);
+}
+
+.Branca {
+
   background-color: var(--c-casa2);
 }

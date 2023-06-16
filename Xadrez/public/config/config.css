@@ -9,7 +9,8 @@
     --c-3: #000;
 
 
-    --tamW-1por8: 12.5vw;
+    --tamW-1por8: 12vw;
+    --tamH-1por8: 12vh;
 }
 *{
     margin: 0;
