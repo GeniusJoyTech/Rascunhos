@@ -1,5 +1,13 @@
-svg{
+@import url(../../../config/config.css);
+
+.peca{
     width: 100%;
     height: 100%;
-    fill: aqua;
+}
+
+.b{
+    fill: var(--c-peca1);
+}
+.p{
+    fill: var(--c-peca2);
 }

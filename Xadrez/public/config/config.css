@@ -1,9 +1,9 @@
 :root{
-    --c-fundo: #d9d9d9;
+    --c-fundo: #000;
     --c-casa1: #ffffff;
-    --c-casa2: #000000;
-    --c-peca1: #ff0000;
-    --c-peca2: #0004ff;
+    --c-casa2: #383838;
+    --c-peca1: #00c8ff;
+    --c-peca2: #ff5e00;
     --c-1: #000;
     --c-2: #000;
     --c-3: #000;
