@@ -1,8 +1,9 @@
 import './css/pecas.css'
-const PeaoP = () => {
+const PeaoP = (props) => {
+    const { id } = props;
     return (
         <>
-            <svg className='peca p' enable-background="new 0 0 100 100" height="100px" version="1.1" viewBox="0 0 100 100" width="100px" xml: space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns: xlink="http://www.w3.org/1999/xlink"><g id="white_exp">
+            <svg id={id} className='peca p' enable-background="new 0 0 100 100" height="100px" version="1.1" viewBox="0 0 100 100" width="100px" xml: space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns: xlink="http://www.w3.org/1999/xlink"><g id="white_exp">
                 <path d="M69.878,83.072C69.954,82.726,70,82.369,70,82c0-2.695-2.148-4.885-4.82-4.982c-0.16-0.265-0.323-0.524-0.489-0.783   
             c-1.822-2.842-4.552-7.112-4.685-33.235C62.76,42.996,65,40.755,65,38c0-2.707-2.166-4.905-4.853-4.985 
             C63.122,30.272,65,26.356,65,22c0-8.271-6.729-15-15-15s-15,6.729-15,15c0,4.356,1.878,8.272,4.853,11.015
