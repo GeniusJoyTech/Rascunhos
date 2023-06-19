@@ -5,6 +5,7 @@
   .Casa {
     width: var(--tamW-1por8);
     height: var(--tamW-1por8);
+    
   }
 }
 
@@ -15,6 +16,13 @@
   }
 }
 
+.Casa{
+  transition: 0.5s;
+}
+
+.Casa:hover{
+  background-color: var(--c-destaque);
+}
 
 .Preta {
   background-color: var(--c-casa1);

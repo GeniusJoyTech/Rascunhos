@@ -1,8 +1,9 @@
 import './css/Casa.css'
 const CasaPreta = (props) =>{
+    const { id, peca } = props;
     return(
-        <div className="Casa Preta">
-            {props.peca}
+        <div id={id} className="Casa Preta">
+            {peca}
         </div>
     );
 }
