@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import './Tabuleiro.css'
+import './css/Tabuleiro.css'
 
 import CasaPreta from '../Components/Casas/CasaPreta'
 import CasaBranca from '../Components/Casas/CasaBranca'
@@ -18,6 +18,7 @@ import ReiB from '../Components/Peças/ReiB'
 import ReiP from '../Components/Peças/ReiP'
 import RainhaB from '../Components/Peças/RainhaB'
 import RainhaP from '../Components/Peças/RainhaP'
+
 function Tabuleiro() {
 
   return (
