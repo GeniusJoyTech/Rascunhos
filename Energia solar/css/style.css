@@ -1,0 +1,47 @@
+*{
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+:root{
+    --tam-1:100vw;
+    --tam-1:100%;
+}
+
+.flex{
+    display: flex;
+    justify-content: space-between;
+}
+
+.navbar{
+    background-color: aqua;
+    width: var(--tam-1);
+    margin-bottom: 10px;
+}
+
+.nav_menu{
+    background-color: aliceblue;
+    width: 50px;
+    height: 50px;
+}
+.carousel{
+    background-color: aqua;
+    height: 100vh;
+    margin-bottom: 10px;
+}
+.car_list{
+    width: 100%;
+    height: 90%;
+    background-color: beige;
+}
+.car_item{
+    width: 100%;
+    height: 100%;
+    background-color: beige;
+    display: none;
+}
+.nav_car{
+    width: 100%;
+    height: 10%;
+    background-color: black;
+}
