@@ -1,0 +1,26 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: Fantasy; /*Trocar */
+  }
+  
+  body {
+    line-height: 1.5;
+  }
+  
+  ul, ol {
+    list-style: none;
+  }
+  
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  
