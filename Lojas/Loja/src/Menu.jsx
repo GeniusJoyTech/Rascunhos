@@ -1,8 +1,9 @@
+import './menu.css';
 function Menu() {
 
     return (
-      <div style={{width:'100vw', background:'black', color:'white'}}>
-        <h1>Grand Theft Auto</h1>
+      <div className='menuContainer'>
+        <h1>Lorem Ipsum</h1>
       </div>
     )
   }
