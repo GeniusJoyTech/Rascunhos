@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "API Extrator de CNPJ",
+  "version": "1.0",
+  "permissions": ["activeTab", "https://casadosdados.com.br/*", "https://api.casadosdados.com.br/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"],
+      "js": ["content.js"]
+    }
+  ]
+}
