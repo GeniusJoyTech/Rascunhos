@@ -1,0 +1,96 @@
+:root {
+  --c1: #000;
+  --c2: #fff;
+
+  --f1: "Arial";
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  font-family: var(--f1);
+}
+body{
+  height: 1000px;
+}
+
+.navbar {
+  position: fixed;
+  z-index: 10;
+  width: 100vw;
+  background-color: var(--c1);
+  color: var(--c2);
+  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2); */
+}
+
+.flex {
+  display: flex;
+}
+
+.justBet{
+  justify-content: space-between;
+}
+.justAro{
+  justify-content: space-around;
+}
+
+.aliCenter{
+  align-items: center;
+}
+.m4{
+  margin: 4px;
+}
+@media (min-width: 1024px) {
+  /*Laptop*/
+  .navbar {
+    height: 120px;
+  }
+  #titulo {
+    /*Ver em navBar*/
+    width: 50%;
+  }
+  #navegadores {
+    /*Ver em navBar*/
+    width: 20%;
+  }
+
+}
+
+@media (min-width: 768px) {
+  /*Tablet*/
+  
+  #navegadores {
+    /*Ver em navBar*/
+    width: 40%;
+  }
+
+}
+
+@media (min-width: 425px) {
+  /*Mobile L*/
+  .navbar {
+    height: 80px;
+  }
+  #titulo {
+    /*Ver em navBar*/
+    width: 50%;
+    font-size: 20px;
+  }
+  #navegadores {
+    /*Ver em navBar*/
+    width: 50%;
+  }
+
+}
+
+@media (min-width: 375px) {
+  /*Mobile M*/
+
+}
+
+@media (min-width: 320px) {
+  /*Mobile S*/
+
+}
