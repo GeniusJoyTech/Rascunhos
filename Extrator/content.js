@@ -66,8 +66,18 @@ function addSearchButtonListener() {
           console.log('Data parsed.', data);
           window.apiResponseData = data;
           console.log('API response data:', data);
-          alert('Pesquisa concluída. Clique no botão "Download JSON" para baixar os dados.');
-          document.getElementById('downloadJSON').style.display = 'block';
+
+          const links = document.querySelectorAll('a[target="_blank"]');
+          const hrefs = Array.from(links).map(link => link.getAttribute('href'));
+
+          console.log('HREFs dos links:', hrefs);
+          const link = document.createElement('a');
+          link.href = hrefs[3]; // Define o atributo href
+          link.target = '_blank'; // Define o atributo target para abrir em uma nova aba
+          link.style.display = 'none'; // Opcional: Esconde o link para não aparecer na página
+          document.body.appendChild(link); // Adiciona o link ao corpo do documento
+          // alert('Pesquisa concluída. Clique no botão "Download JSON" para baixar os dados.');
+          // document.getElementById('downloadJSON').style.display = 'block';
         })
         .catch(error => console.error('Erro:', error));
     });

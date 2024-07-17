@@ -12,12 +12,10 @@
   box-sizing: border-box;
   font-family: var(--f1);
 }
-body{
-  height: 1000px;
-}
 
 .navbar {
   position: fixed;
+  top: 0;
   z-index: 10;
   width: 100vw;
   background-color: var(--c1);
@@ -46,6 +44,12 @@ body{
   /*Laptop*/
   .navbar {
     height: 120px;
+  }
+  .carousel {
+    margin-top: 120px;
+    width: 100vw;
+    height: 100vh;
+    background-color: aqua;
   }
   #titulo {
     /*Ver em navBar*/
@@ -78,7 +82,13 @@ body{
     width: 50%;
     font-size: 20px;
   }
-  #navegadores {
+
+  .carousel {
+    margin-top: 80px;
+    width: 100vw;
+    height: 100vh;
+    background-color: aqua;
+  }  #navegadores {
     /*Ver em navBar*/
     width: 50%;
   }
