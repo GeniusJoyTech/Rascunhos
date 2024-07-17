@@ -6,6 +6,9 @@ from datetime import datetime
 import time
 from colorama import init, Fore, Style
 
+# Inicializa a colorama
+init(autoreset=True)
+
 # Função para inicializar o driver do navegador
 def inicializar_driver():
     options = webdriver.ChromeOptions()
@@ -28,7 +31,7 @@ def extrair_links(driver):
     return hrefs
 
 # Função para extrair os dados de um CNPJ
-def extrair_dados_cnpj(driver, href, faltantes):
+def extrair_dados_cnpj(driver, href):
     campos = [
         ("CNPJ", '//label[contains(text(), "CNPJ:")]/following-sibling::p[@class="has-text-weight-bold"]'),
         ("RazaoSocial", '//label[contains(text(), "Razão Social:")]/following-sibling::p[@class="has-text-weight-bold"]'),
@@ -56,33 +59,42 @@ def extrair_dados_cnpj(driver, href, faltantes):
     ]
 
     dados_cnpj = {"Href": href}
-    for campo, xpath in campos:
-        try:
-            elemento = driver.find_element(By.XPATH, xpath)
-            dados_cnpj[campo] = elemento.text.strip()
-        except:
-            if href not in faltantes:
-                faltantes.append(href)
-            dados_cnpj[campo] = "Não encontrado pelo extrator."
-    
+
+    # Tenta extrair os dados duas vezes, recriando o driver na segunda tentativa
+    for tentativa in range(2):
+        if tentativa == 1:
+            print(Fore.RED + f"Segunda Tentativa em {href}" + Style.RESET_ALL)
+            driver.quit()
+            time.sleep(7)
+            driver = inicializar_driver()
+            driver.get(href)
+            time.sleep(2)
+
+        for campo, xpath in campos:
+            try:
+                elemento = driver.find_element(By.XPATH, xpath)
+                dados_cnpj[campo] = elemento.text.strip()
+            except:
+                dados_cnpj[campo] = "Não encontrado pelo extrator."
+
+        if "Não encontrado pelo extrator." not in dados_cnpj.values():
+            break
+
     return dados_cnpj
 
 # Função para coletar dados de um link
-def processar_link(href, dados_cnpjs, faltantes):
+def processar_link(href, dados_cnpjs):
     driver = inicializar_driver()
     driver.get(href)
     time.sleep(2)
     try:
-        dados_cnpj = extrair_dados_cnpj(driver, href, faltantes)
+        dados_cnpj = extrair_dados_cnpj(driver, href)
         dados_cnpjs.append(dados_cnpj)
         print_dados_cnpj(dados_cnpj)
     except Exception as e:
         print('*' * 50)
-        print(f"Erro ao processar CNPJ {href}: {str(e)}")
-        faltantes.append(href)
-        print(faltantes)
+        print(Fore.RED + 'Erro desconhecido:' + str(e) + Style.RESET_ALL)
         print('*' * 50)
-        time.sleep(15)
     finally:
         driver.quit()
 
@@ -102,13 +114,12 @@ def coletar_dados_cnpjs(url):
     driver.quit()
 
     dados_cnpjs = []
-    faltantes = []
 
     cont = 0
 
     for href in hrefs:
         cont += 1
-        processar_link(href, dados_cnpjs, faltantes)
+        processar_link(href, dados_cnpjs)
         print(cont)
         if cont == 10:
             break
@@ -116,7 +127,6 @@ def coletar_dados_cnpjs(url):
     fim = datetime.now()
     print(Fore.RED + f"Começo: {inicio} Fim: {fim}" + Style.RESET_ALL)
     print(dados_cnpjs)
-    print(faltantes)
 
 # Executa a coleta de dados
 url = "https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"
