@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 from datetime import datetime
 import time
 from colorama import init, Fore, Style
@@ -19,17 +20,16 @@ def inicializar_driver():
 # Função para abrir a página e clicar no botão de pesquisa
 def abrir_pagina(driver, url):
     driver.get(url)
-    pesquisar = driver.find_element(By.CSS_SELECTOR, ".button.is-success.is-medium")
-    driver.execute_script("arguments[0].scrollIntoView(true);", pesquisar)
-    pesquisar.click()
 
 # Função para extrair os links dos CNPJs
 def extrair_links(driver):
-    wait = WebDriverWait(driver, 10)
-    elementos = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.box a[href]")))
-    hrefs = [elemento.get_attribute("href") for elemento in elementos]
-    return hrefs
-
+    try:
+        wait = WebDriverWait(driver, 10)
+        elementos = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.box a[href]")))
+        hrefs = [elemento.get_attribute("href") for elemento in elementos]
+        return hrefs
+    except:
+        return []
 # Função para extrair os dados de um CNPJ
 def extrair_dados_cnpj(driver, href):
     campos = [
@@ -74,8 +74,9 @@ def extrair_dados_cnpj(driver, href):
             try:
                 elemento = driver.find_element(By.XPATH, xpath)
                 dados_cnpj[campo] = elemento.text.strip()
-            except:
+            except Exception as e:
                 dados_cnpj[campo] = "Não encontrado pelo extrator."
+                print(f"Erro ao extrair {campo}: {e}")
 
         if "Não encontrado pelo extrator." not in dados_cnpj.values():
             break
@@ -105,25 +106,228 @@ def print_dados_cnpj(dados_cnpj):
         print(f"{chave}: {valor}")
     print("=" * 50)
 
+# Função para escrever dados na página, separado por input
+def dadosBusca(driver, elemento, texto_para_digitar):    
+    try:
+        driver.execute_script("arguments[0].scrollIntoView(true);", elemento)
+        for texto in texto_para_digitar:
+            elemento.send_keys(texto)
+            elemento.send_keys(Keys.ARROW_DOWN)
+            elemento.send_keys(Keys.RETURN)
+            elemento.send_keys(Keys.ESCAPE)
+    except Exception as e:
+        print("Erro: " + str(e))
+
+def clicar_checkbox(driver, texto):
+    try:
+        checkbox_label = driver.find_element(By.XPATH, f"//span[contains(text(), '{texto}')]")
+        driver.execute_script("""
+            var iframes = document.getElementsByTagName('iframe');
+            for (var i = 0; i < iframes.length; i++) {
+                iframes[i].style.display = 'none';
+            }
+            var scripts = document.getElementsByTagName('script');
+            for (var i = scripts.length - 1; i >= 0; i--) {
+                if (scripts[i].src.startsWith('https://static.cloudflareinsights.com/beacon.min.js')) {
+                    scripts[i].parentNode.removeChild(scripts[i]);
+                }
+            }
+            var elements = document.querySelectorAll('div[style*="position: absolute"], div[style*="position: fixed"]');
+            elements.forEach(function(element) {
+                element.style.display = 'none';
+            });
+            var element = document.getElementById('aswift_6_host');
+            if (element) {
+                element.style.display = 'none';
+            }
+            var elements = document.querySelectorAll('ins.adsbygoogle');
+            elements.forEach(function(element) {
+                element.style.display = 'none';
+            });
+            var ads = document.querySelectorAll('div._2ckkx');
+            ads.forEach(function(ad) {
+                ad.style.display = 'none';
+            });
+            var elements = document.querySelectorAll('[id^="ad"]');
+            elements.forEach(function(element) {
+                element.remove();
+            });
+        """)
+        try:
+            checkbox_label.click()
+        except Exception as e:
+            print(f"Erro tentativa 1: {e}")
+            time.sleep(5)
+            driver.execute_script("""
+                var iframes = document.getElementsByTagName('iframe');
+                for (var i = 0; i < iframes.length; i++) {
+                    iframes[i].style.display = 'none';
+                }
+                var scripts = document.getElementsByTagName('script');
+                for (var i = scripts.length - 1; i >= 0; i--) {
+                    if (scripts[i].src.startsWith('https://static.cloudflareinsights.com/beacon.min.js')) {
+                        scripts[i].parentNode.removeChild(scripts[i]);
+                    }
+                }
+                var elements = document.querySelectorAll('div[style*="position: absolute"], div[style*="position: fixed"]');
+                elements.forEach(function(element) {
+                    element.style.display = 'none';
+                });
+                var element = document.getElementById('aswift_6_host');
+                if (element) {
+                    element.style.display = 'none';
+                }
+                var elements = document.querySelectorAll('ins.adsbygoogle');
+                elements.forEach(function(element) {
+                    element.style.display = 'none';
+                });
+                var ads = document.querySelectorAll('div._2ckkx');
+                ads.forEach(function(ad) {
+                    ad.style.display = 'none';
+                });
+                var elements = document.querySelectorAll('[id^="ad"]');
+                elements.forEach(function(element) {
+                    element.remove();
+                });
+            """)
+            try:
+                checkbox_label.click()
+            except:
+                print("Não foi mesmo. :(")    
+    except Exception as e:
+        print('*' * 50)
+        print(texto)
+        print('*' * 50)
+        print("Erro: " + str(e))
+
 # Função principal para coletar os dados dos CNPJs
 def coletar_dados_cnpjs(url):
     inicio = datetime.now()
     driver = inicializar_driver()
     abrir_pagina(driver, url)
-    hrefs = extrair_links(driver)
-    driver.quit()
+    wait = WebDriverWait(driver, 10)
+
+    # Aqui eu filtro quais dados desejo selecionar
+    textoRazaoSocial = []
+    textoCNAE = []
+    checkCnae2 = False
+    textoNatureza = []
+    selecao = ""
+    textoUF = []
+    textoMunicipio = []
+    textoBairro = []
+    textoCep = []
+    textoDDD = []
+    textoDataDe = []
+    textoDataAte = []
+    textoCapitalDe = []
+    textoCapitalAte = []
+    checkSomenteMei = False
+    checkExcluirMei = False
+    checkMatriz = False
+    checkFilial = False
+    checkComTelefone = False
+    checkFixo = False
+    checkCelular = False
+    checkEmail = False
+
+    if textoRazaoSocial:
+        inputRazaoSocial = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Razão Social ou Fantasia" and @class="input is-is-normal" and @type="is-info"]')))
+        dadosBusca(driver, inputRazaoSocial, textoRazaoSocial)
+
+    if textoCNAE:
+        inputCNAE = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Código ou nome da atividade" and @class="input is-is-normal" and @type="text"]')))
+        dadosBusca(driver, inputCNAE, textoCNAE)
+
+    if checkCnae2:
+        clicar_checkbox(driver, "Incluir Atividade Secundária")
+
+    if textoNatureza:
+        inputNatureza = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Código ou nome da natureza" and @class="input is-is-normal" and @type="is-info"]')))
+        dadosBusca(driver, inputNatureza, textoNatureza)
+        
+    if selecao:
+        inputSelecao = wait.until(EC.presence_of_element_located((By.TAG_NAME, 'select')))
+        inputSelecao.send_keys(selecao)
+        inputSelecao.send_keys(Keys.TAB)
+
+    if textoUF:
+        inputUF = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Selecione o estado" and @class="input is-is-normal" and @type="text"]')))
+        dadosBusca(driver, inputUF, textoUF)
+
+    if textoMunicipio:
+        inputMunicipio = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Selecione um município"]')))
+        dadosBusca(driver, inputMunicipio, textoMunicipio)
+
+    if textoBairro:
+        inputBairro = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Digite o nome do bairro"]')))
+        dadosBusca(driver, inputBairro, textoBairro)
+
+    if textoCep:
+        inputCep = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Somente 8 digitos"]')))
+        dadosBusca(driver, inputCep, textoCep)
+
+    if textoDDD:
+        inputDDD = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="2 dígitos"]')))
+        dadosBusca(driver, inputDDD, textoDDD)
+
+    if textoDataDe:
+        inputDataDe = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="A partir de" and @class="input" and @type="date"]')))
+        dadosBusca(driver, inputDataDe, textoDataDe)
+
+    if textoDataAte:
+        inputDataAte = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Até" and @class="input" and @type="date"]')))
+        dadosBusca(driver, inputDataAte, textoDataAte)
+
+    if textoCapitalDe:
+        inputCapitalDe = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="A partir de" and @type="number"]')))
+        dadosBusca(driver, inputCapitalDe, textoCapitalDe)
+
+    if textoCapitalAte:
+        inputCapitalAte = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Até" and @type="number"]')))
+        dadosBusca(driver, inputCapitalAte, textoCapitalAte)
+
+    if checkSomenteMei:
+        clicar_checkbox(driver, " Somente MEI ")
+
+    if checkExcluirMei:
+        clicar_checkbox(driver, " Excluir MEI ")
+
+    if checkMatriz:
+        clicar_checkbox(driver, " Somente matriz ")
+
+    if checkFilial:
+        clicar_checkbox(driver, " Somente filial ")
+
+    if checkComTelefone:
+        clicar_checkbox(driver, " Com contato de telefone ")
+
+    if checkFixo:
+        clicar_checkbox(driver, " Somente fixo ")
+
+    if checkCelular:
+        clicar_checkbox(driver, " Somente celular ")
+
+    if checkEmail:
+        clicar_checkbox(driver, " Com e-mail ")
+
+    # Nesta parte eu inicio a pesquisa
+    pesquisar = wait.until(EC.element_to_be_clickable((By.XPATH, '//a[contains(@class, "button") and contains(@class, "is-success") and contains(@class, "is-medium") and text()="Pesquisar"]')))
+    driver.execute_script("arguments[0].scrollIntoView(true);", pesquisar)
+    pesquisar.click()
 
     dados_cnpjs = []
-
     cont = 0
 
-    for href in hrefs:
-        cont += 1
-        processar_link(href, dados_cnpjs)
-        print(cont)
-        if cont == 10:
-            break
-
+    hrefs = extrair_links(driver)
+    if hrefs:
+        for href in hrefs:
+            cont += 1
+            processar_link(href, dados_cnpjs)
+            print(cont)
+            if cont == 10:
+                break
+    else: print("Nada consta.")
     fim = datetime.now()
     print(Fore.RED + f"Começo: {inicio} Fim: {fim}" + Style.RESET_ALL)
     print(dados_cnpjs)

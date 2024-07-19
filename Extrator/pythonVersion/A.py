@@ -38,11 +38,83 @@ def dadosBusca(driver, elemento, texto_para_digitar):
 def clicar_checkbox(driver, texto):
     
     try:
-        time.sleep(5)   
         # Localiza o label pelo texto e então encontra o input checkbox dentro do label
         checkbox_label = driver.find_element(By.XPATH, f"//span[.//text()[contains(., '{texto}')]]")
-        checkbox_label.click()    
-        
+        driver.execute_script("""
+    var iframes = document.getElementsByTagName('iframe');
+    for (var i = 0; i < iframes.length; i++) {
+        iframes[i].style.display = 'none';
+    }
+    var scripts = document.getElementsByTagName('script');
+    for (var i = scripts.length - 1; i >= 0; i--) {
+        if (scripts[i].src.startsWith('https://static.cloudflareinsights.com/beacon.min.js')) {
+            scripts[i].parentNode.removeChild(scripts[i]);
+        }
+    }
+    var elements = document.querySelectorAll('div[style*="position: absolute"], div[style*="position: fixed"]');
+    elements.forEach(function(element) {
+        element.style.display = 'none';
+    });
+    var element = document.getElementById('aswift_6_host');
+    if (element) {
+        element.style.display = 'none';
+    }
+    var elements = document.querySelectorAll('ins.adsbygoogle');
+    elements.forEach(function(element) {
+        element.style.display = 'none';
+    });
+    var ads = document.querySelectorAll('div._2ckkx');
+    ads.forEach(function(ad) {
+        ad.style.display = 'none';
+    });
+    var elements = document.querySelectorAll('[id^="ad"]');
+    elements.forEach(function(element) {
+        element.remove();
+    });
+""")
+        try:
+            
+            checkbox_label.click()      
+        except Exception as e:
+            print(f"Erro tentativa 1: {e}")
+            time.sleep(5)
+            driver.execute_script("""
+                var iframes = document.getElementsByTagName('iframe');
+                for (var i = 0; i < iframes.length; i++) {
+                    iframes[i].style.display = 'none';
+                }
+                var scripts = document.getElementsByTagName('script');
+                for (var i = scripts.length - 1; i >= 0; i--) {
+                    if (scripts[i].src.startsWith('https://static.cloudflareinsights.com/beacon.min.js')) {
+                        scripts[i].parentNode.removeChild(scripts[i]);
+                    }
+                }
+                var elements = document.querySelectorAll('div[style*="position: absolute"], div[style*="position: fixed"]');
+                elements.forEach(function(element) {
+                    element.style.display = 'none';
+                });
+                var element = document.getElementById('aswift_6_host');
+                if (element) {
+                    element.style.display = 'none';
+                }
+                var elements = document.querySelectorAll('ins.adsbygoogle');
+                elements.forEach(function(element) {
+                    element.style.display = 'none';
+                });
+                var ads = document.querySelectorAll('div._2ckkx');
+                ads.forEach(function(ad) {
+                    ad.style.display = 'none';
+                });
+                var elements = document.querySelectorAll('[id^="ad"]');
+                elements.forEach(function(element) {
+                    element.remove();
+                });
+            """)
+            try:
+                checkbox_label.click()
+            except:
+                print("Não foi mesmo. :(")    
+            
     except Exception as e:
         print('*' * 50)
         print(texto)
@@ -53,7 +125,6 @@ url = "https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"
 
 driver = inicializar_driver()
 abrir_pagina(driver, url)
-
 
 textoRazaoSocial = ["Teste", "Testando"]
 if textoRazaoSocial:
@@ -79,7 +150,7 @@ if selecao:
     inputSelecao = driver.find_element(By.TAG_NAME, 'select')
     inputSelecao.send_keys(selecao)
     inputSelecao.send_keys(Keys.TAB)
-    
+
 textoUF = ["São Paulo", "Acre"]
 if textoUF:
     inputUF = driver.find_element(By.XPATH, '//input[@placeholder="Selecione o estado" and @class="input is-is-normal" and @type="text"]')
@@ -126,7 +197,6 @@ if textoCapitalAte:
     inputCapitalAte = driver.find_element(By.XPATH, '//input[@placeholder="Até" and @type="number"]')
     dadosBusca(driver, inputCapitalAte, textoCapitalAte)
 
-##############################
 checkSomenteMei = True
 if checkSomenteMei:
     clicar_checkbox(driver, " Somente MEI ")
@@ -158,3 +228,4 @@ if checkCelular:
 checkEmail = True
 if checkEmail:
     clicar_checkbox(driver, " Com e-mail ")
+driver.quit()
