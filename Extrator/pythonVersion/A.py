@@ -1,108 +1,160 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+
 import time
+
+
+# Função para inicializar o driver do navegador
+def inicializar_driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument('--log-level=3')
+    driver = webdriver.Chrome(options=options)
+    return driver
+
+# Função para abrir a página e clicar no botão de pesquisa
+def abrir_pagina(driver, url):
+    return driver.get(url)
+
+# Função para escrever dados na página, separado por input
+def dadosBusca(driver, elemento, texto_para_digitar):    
+    try:
+        # driver.execute_script("arguments[0].scrollIntoView(true);", elemento)
+        for texto in texto_para_digitar:
+                elemento.send_keys(texto)
+                
+                # Pressiona a seta para baixo
+                elemento.send_keys(Keys.ARROW_DOWN)
+                # Pressiona Enter
+                elemento.send_keys(Keys.RETURN)
+                
+                # Pressiona Esc
+                elemento.send_keys(Keys.ESCAPE)
+                
+    except Exception as e:
+        print("Erro: " + str(e))
+    # driver.execute_script("arguments[0].scrollIntoView(true);", pesquisar)
+    # pesquisar.click()
+def clicar_checkbox(driver, texto):
+    
+    try:
+        time.sleep(5)   
+        # Localiza o label pelo texto e então encontra o input checkbox dentro do label
+        checkbox_label = driver.find_element(By.XPATH, f"//span[.//text()[contains(., '{texto}')]]")
+        checkbox_label.click()    
+        
+    except Exception as e:
+        print('*' * 50)
+        print(texto)
+        print('*' * 50)
+        print("Erro: " + str(e))
+# Parte de processamento
 url = "https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"
 
-# Inicializa o driver do Chrome
-driver = webdriver.Chrome()
+driver = inicializar_driver()
+abrir_pagina(driver, url)
 
-try:
-    # Abre a página web
-    driver.get(url)
 
-    # Encontra o elemento do botão de pesquisa e clica
-    pesquisar = driver.find_element(By.CSS_SELECTOR, ".button.is-success.is-medium")
-    driver.execute_script("arguments[0].scrollIntoView(true);", pesquisar)
-    pesquisar.click()
+textoRazaoSocial = ["Teste", "Testando"]
+if textoRazaoSocial:
+    inputRazaoSocial = driver.find_element(By.XPATH, '//input[@placeholder="Razão Social ou Fantasia" and @class="input is-is-normal" and @type="is-info"]')
+    dadosBusca(driver, inputRazaoSocial, textoRazaoSocial)
 
-    # Define a espera explícita para os elementos <a> na lista de resultados
-    wait = WebDriverWait(driver, 10)
-    elementos = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.box a[href]")))
-    hrefs = [elemento.get_attribute("href") for elemento in elementos]
+textoCNAE = ["4721102", "5611202"]
+if textoCNAE:
+    inputCNAE = driver.find_element(By.XPATH, '//input[@placeholder="Código ou nome da atividade" and @class="input is-is-normal" and @type="text"]')
+    dadosBusca(driver, inputCNAE, textoCNAE)
 
-    # Lista para armazenar os dados de cada CNPJ
-    dados_cnpjs = []
+checkCnae2 = True
+if checkCnae2:
+    clicar_checkbox(driver, "Incluir Atividade Secundária")
 
-    # Função para extrair dados de um CNPJ
-    def extrair_dados_cnpj(href):
-        driver.get(href)
-        time.sleep(2)  # Aguarda um pouco para garantir que a página esteja totalmente carregada
-        
-        def extrair_texto_xpath(xpath):
-            try:
-                elemento = driver.find_element(By.XPATH, xpath)
-                return elemento.text.strip()
-            except Exception as e:
-                print(f"Erro ao extrair {xpath}: {e}")
-                return "Não encontrado"
+textoNatureza = ["1023"]
+if textoNatureza:
+    inputNatureza = driver.find_element(By.XPATH, '//input[@placeholder="Código ou nome da atividade" and @class="input is-is-normal" and @type="text"]')
+    dadosBusca(driver, inputNatureza, textoNatureza)
+    
+selecao = "Inapta"
+if selecao:
+    inputSelecao = driver.find_element(By.TAG_NAME, 'select')
+    inputSelecao.send_keys(selecao)
+    inputSelecao.send_keys(Keys.TAB)
+    
+textoUF = ["São Paulo", "Acre"]
+if textoUF:
+    inputUF = driver.find_element(By.XPATH, '//input[@placeholder="Selecione o estado" and @class="input is-is-normal" and @type="text"]')
+    dadosBusca(driver, inputUF, textoUF)
 
-        # Extrai dados usando os XPaths fornecidos
-        cnpj = extrair_texto_xpath('//label[contains(text(), "CNPJ:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        razaoSocial = extrair_texto_xpath('//label[contains(text(), "Razão Social:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        nomeFantasia = extrair_texto_xpath('//label[contains(text(), "Nome Fantasia:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        situacaoCadastral = extrair_texto_xpath('//label[contains(text(), "Situação Cadastral:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        dataSituacao = extrair_texto_xpath('//label[contains(text(), "Data da Situação:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        abertura = extrair_texto_xpath('//label[contains(text(), "Data de Abertura:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        matrizOuFilial = extrair_texto_xpath('//label[contains(text(), "Matriz ou Filial:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        naturezaJuridica = extrair_texto_xpath('//label[contains(text(), "Natureza Jurídica:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        empresaMei = extrair_texto_xpath('//label[contains(text(), "Empresa MEI:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        capitalSocial = extrair_texto_xpath('//label[contains(text(), "Capital Social:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        logradouro = extrair_texto_xpath('//label[contains(text(), "Logradouro:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        numero = extrair_texto_xpath('//label[contains(text(), "Número:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        complemento = extrair_texto_xpath('//label[contains(text(), "Complemento:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        bairro = extrair_texto_xpath('//label[contains(text(), "Bairro:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        cep = extrair_texto_xpath('//label[contains(text(), "CEP:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        municipio = extrair_texto_xpath('//label[contains(text(), "Municipio:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        estado = extrair_texto_xpath('//label[contains(text(), "Estado:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        email = extrair_texto_xpath('//label[contains(text(), "Email:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        telefone = extrair_texto_xpath('//label[contains(text(), "Telefone:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        cnaePrincipal = extrair_texto_xpath('//label[contains(text(), "CNAE Principal:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        cnaesSecundarios = extrair_texto_xpath('//label[contains(text(), "CNAEs Secundários:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        simples = extrair_texto_xpath('//label[contains(text(), "Simples:")]/following-sibling::p[@class="has-text-weight-bold"]')
-        socios = extrair_texto_xpath('//label[contains(text(), "Sócios:")]/following-sibling::p[@class="has-text-weight-bold"]')
+textoMunicipio = ["Sorocaba", "Acrelandia"]
+if textoMunicipio:
+    inputMunicipio = driver.find_element(By.XPATH, '//input[@placeholder="Selecione um município"]')
+    dadosBusca(driver, inputMunicipio, textoMunicipio)
 
-        # Armazena os dados em um dicionário
-        dados = {
-            "CNPJ": cnpj,
-            "RazaoSocial": razaoSocial,
-            "NomeFantasia": nomeFantasia,
-            "SituacaoCadastral": situacaoCadastral,
-            "DataSituacao": dataSituacao,
-            "Abertura": abertura,
-            "MatrizOuFilial": matrizOuFilial,
-            "NaturezaJuridica": naturezaJuridica,
-            "EmpresaMEI": empresaMei,
-            "CapitalSocial": capitalSocial,
-            "Logradouro": logradouro,
-            "Numero": numero,
-            "Complemento": complemento,
-            "Bairro": bairro,
-            "CEP": cep,
-            "Municipio": municipio,
-            "Estado": estado,
-            "Email": email,
-            "Telefone": telefone,
-            "CNAEPrincipal": cnaePrincipal,
-            "CNAEsSecundarios": cnaesSecundarios,
-            "Simples": simples,
-            "Socios": socios
-        }
+textoBairro = ["Central Parque"]
+if textoBairro:
+    inputBairro = driver.find_element(By.XPATH, '//input[@placeholder="Digite o nome do bairro"]')
+    dadosBusca(driver, inputBairro, textoBairro)
 
-        return dados
+textoCep = ["18051360"]
+if textoCep:
+    inputCep = driver.find_element(By.XPATH, '//input[@placeholder="Somente 8 digitos"]')
+    dadosBusca(driver, inputCep, textoCep)
 
-    # Itera sobre os links dos CNPJs encontrados
-    for href in hrefs:
-        dados_cnpj = extrair_dados_cnpj(href)
-        if dados_cnpj:
-            dados_cnpjs.append(dados_cnpj)
-            # Imprime os dados do CNPJ
-            print("Dados do CNPJ:")
-            for chave, valor in dados_cnpj.items():
-                print(f"{chave}: {valor}")
-            print("=" * 50)  # Separador visual entre os dados de diferentes CNPJs
+textoDDD = ["15"]
+if textoDDD:
+    inputDDD = driver.find_element(By.XPATH, '//input[@placeholder="2 dígitos"]')
+    dadosBusca(driver, inputDDD, textoDDD)
 
-finally:
-    # Fecha o navegador
-    driver.quit()
+
+textoDataDe = ["24-06-1998"]
+if textoDataDe:
+    inputDataDe = driver.find_element(By.XPATH, '//input[@placeholder="A partir de" and @class="input" and @type="date"]')
+    dadosBusca(driver, inputDataDe, textoDataDe)
+
+textoDataAte = ["24-06-2025"]
+if textoDataAte:
+    inputDataAte = driver.find_element(By.XPATH, '//input[@placeholder="Até" and @class="input" and @type="date"]')
+    dadosBusca(driver, inputDataAte, textoDataAte)
+
+textoCapitalDe = ["2406"]
+if textoCapitalDe:
+    inputCapitalDe = driver.find_element(By.XPATH, '//input[@placeholder="A partir de" and @type="number"]')
+    dadosBusca(driver, inputCapitalDe, textoCapitalDe)
+
+textoCapitalAte = ["2025"]
+if textoCapitalAte:
+    inputCapitalAte = driver.find_element(By.XPATH, '//input[@placeholder="Até" and @type="number"]')
+    dadosBusca(driver, inputCapitalAte, textoCapitalAte)
+
+##############################
+checkSomenteMei = True
+if checkSomenteMei:
+    clicar_checkbox(driver, " Somente MEI ")
+
+checkExcluirMei = True
+if checkExcluirMei:
+    clicar_checkbox(driver, " Excluir MEI ")
+
+checkMatriz = True
+if checkMatriz:
+    clicar_checkbox(driver, " Somente matriz ")
+
+checkFilial = True
+if checkFilial:
+    clicar_checkbox(driver, " Somente filial ")
+
+checkComTelefone = True
+if checkComTelefone:
+    clicar_checkbox(driver, " Com contato de telefone ")
+
+checkFixo = True
+if checkFixo:
+    clicar_checkbox(driver, " Somente fixo ")
+
+checkCelular = True
+if checkCelular:
+    clicar_checkbox(driver, " Somente celular ")
+
+checkEmail = True
+if checkEmail:
+    clicar_checkbox(driver, " Com e-mail ")
