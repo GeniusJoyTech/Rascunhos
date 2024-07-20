@@ -8,10 +8,11 @@ from tkinter import ttk
 from colorama import init, Fore, Style
 
 
+
 import tkinter as tk
 import time
 import pandas as pd
-
+import sys
 # Inicializa a colorama
 init(autoreset=True)
 
@@ -268,6 +269,9 @@ def caixaDialogoUsuario():
 
             self.create_widgets()
         
+            # Configura o protocolo para o evento de fechamento da janela
+            self.protocol("WM_DELETE_WINDOW", self.cancel)
+            
         def create_widgets(self):
             # Função para criar uma linha com um rótulo e um campo de entrada
             def criar_linha(label_text, row, column=0, column_span=2):
@@ -361,10 +365,10 @@ def caixaDialogoUsuario():
         def cancel(self):
             self.resultado = None
             self.destroy()
+            sys.exit(0)
             
     root = tk.Tk()
     root.withdraw()  # Oculta a janela principal
-
     dialog = FiltroDialog(root)
     root.wait_window(dialog)  # Aguarda o fechamento da caixa de diálogo
     return(dialog.resultado)
@@ -373,7 +377,7 @@ def caixaDialogoUsuario():
     #     # Aqui você pode usar os dados coletados conforme necessário
     # else:
     #     print("Coleta de dados cancelada.")
-
+    
 # Função principal para coletar os dados dos CNPJs
 def coletar_dados_cnpjs(url):
     resultado=caixaDialogoUsuario()
@@ -522,13 +526,17 @@ def coletar_dados_cnpjs(url):
     print(Fore.RED + f"Começo: {inicio} Fim: {fim}" + Style.RESET_ALL)
     return(dados_cnpjs)
 
+
 # Executa a coleta de dados
-url = "https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"
-json_excel = coletar_dados_cnpjs(url)
-
-df = pd.DataFrame(json_excel)
-
-# Salvar o DataFrame como um arquivo Excel
-df.to_excel('extracao.xlsx', index=False)
-
-print(json_excel)
+def main():
+    try:
+        
+        url = "https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"
+        json_excel = coletar_dados_cnpjs(url)
+        df = pd.DataFrame(json_excel)
+        # Salvar o DataFrame como um arquivo Excel
+        df.to_excel('extracao.xlsx', index=False)
+        print(json_excel)
+    except Exception as e:
+        print(e)
+main()
