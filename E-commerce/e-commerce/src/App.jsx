@@ -1,16 +1,14 @@
 import React from "react";
 import "./App.css";
 
-import NavBar from './NavBar';
-import InformativoCarousel from "./InformativoCarousel";
+import Cliente from './Client/Cliente';
 
 
 function App() {
 
   return (
     <>
-      <NavBar/>
-      <InformativoCarousel/>
+      <Cliente/>
     </>
   )
 }
