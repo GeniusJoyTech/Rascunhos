@@ -19,7 +19,13 @@ init(autoreset=True)
 # Função para inicializar o driver do navegador
 def inicializar_driver():
     options = webdriver.ChromeOptions()
-    options.add_argument('--log-level=3')
+    # options.add_argument("--headless")  # Descomente se necessário
+    options.add_argument("--log-level=3")  # Reduz a quantidade de logs
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920x1080")
+    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
     driver = webdriver.Chrome(options=options)
     return driver
 
@@ -35,35 +41,43 @@ def extrair_links(driver):
     # Espera até que o elemento <p class="subtitle is-5"> esteja presente
     wait = WebDriverWait(driver, 15)
     try:
+        
         elemento_p = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "p.subtitle.is-5")))
+        # elemento_p = wait.until(EC.presence_of_element_located((By.XPATH, '//@class="p.subtitle.is-5" and contains(text(), "Encontrado")')))
+        
         # Encontra o elemento <b> dentro do elemento <p>
         elemento_b = elemento_p.find_element(By.TAG_NAME, "b")
         
         # Extrai o texto do elemento <b> e converte para inteiro, removendo pontos
         numero_resultados = int(elemento_b.text.replace('.', ''))
-        
+        print(numero_resultados)
+        print(f'Encontrado: {numero_resultados}')
         pagina_atual = 1
         if numero_resultados > 20:
-            max_paginas = numero_resultados // 20
+            max_paginas = (numero_resultados + 19) // 20  # Calcula o número de páginas necessário
+            max_paginas = min(max_paginas, 10)  # Limita o número de páginas a no máximo 10
+            print(max_paginas)
         else:
-            max_paginas = numero_resultados
-        
-        ####Remover essa parte depois################################
-        ####Remover essa parte depois################################
-        ####Remover essa parte depois################################
-        
-        max_paginas = 2
-        
-        ####Remover essa parte depois################################
-        ####Remover essa parte depois################################
-        ####Remover essa parte depois################################
+            max_paginas = 1  # Se há 20 ou menos resultados, apenas uma página é necessária
+
         
         
+        seta = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "i.fa.fa-angle-right")))
+        seta.click()
+    
         while pagina_atual <= max_paginas:
+            print(f'Obtendo links da página: {pagina_atual}')
             try:
                 wait = WebDriverWait(driver, 10)
+                elementos = []
+                hrefs = []
                 elementos = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.box a[href]")))
+                
                 hrefs = [elemento.get_attribute("href") for elemento in elementos]
+                print('*'*100)
+                print(hrefs)
+                print('*'*100)
+                time.sleep(10)
                 links.extend(hrefs)
                 seta = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "i.fa.fa-angle-right")))
                 seta.click()
@@ -118,7 +132,7 @@ def extrair_dados_cnpj(driver, href):
                 dados_cnpj[campo] = elemento.text.strip()
             except Exception as e:
                 dados_cnpj[campo] = "Não encontrado pelo extrator."
-                print(f"Erro ao extrair {campo}: {e}")
+                print(f"Erro ao extrair {campo}: {e}", flush=True)
 
         if "Não encontrado pelo extrator." not in dados_cnpj.values():
             break
@@ -133,11 +147,11 @@ def processar_link(href, dados_cnpjs):
     try:
         dados_cnpj = extrair_dados_cnpj(driver, href)
         dados_cnpjs.append(dados_cnpj)
-        #print_dados_cnpj(dados_cnpj)
+        #print_dados_cnpj(dados_cnpj, flush=True)
     except Exception as e:
-        print('*' * 50)
-        print(Fore.RED + 'Erro desconhecido:' + str(e) + Style.RESET_ALL)
-        print('*' * 50)
+        print('*' * 50, flush=True)
+        print(Fore.RED + 'Erro desconhecido:' + str(e) + Style.RESET_ALL, flush=True)
+        print('*' * 50, flush=True)
     finally:
         driver.quit()
 
@@ -159,7 +173,7 @@ def dadosBusca(driver, elemento, texto_para_digitar):
             elemento.send_keys(Keys.RETURN)
             elemento.send_keys(Keys.ESCAPE)
     except Exception as e:
-        print("Erro: " + str(e))
+        print("Erro: " + str(e), flush=True)
 
 def clicar_checkbox(driver, texto):
     try:
@@ -239,10 +253,10 @@ def clicar_checkbox(driver, texto):
                 # print("Não foi mesmo. :(")    
                 return
     except Exception as e:
-        print('*' * 50)
-        print(texto)
-        print('*' * 50)
-        print("Erro: " + str(e))
+        print('*' * 50, flush=True)
+        print(texto, flush=True)
+        print('*' * 50, flush=True)
+        print("Erro: " + str(e), flush=True)
 
 def caixaDialogoUsuario():
     class FiltroDialog(tk.Toplevel):
@@ -413,6 +427,7 @@ def coletar_dados_cnpjs(url):
     if resultado['uf']:
         inputUF = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Selecione o estado" and @class="input is-is-normal" and @type="text"]')))
         dadosBusca(driver, inputUF, resultado['uf'])
+        time.sleep(3)
 
     if resultado['municipio']:
         inputMunicipio = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Selecione um município"]')))
@@ -471,7 +486,7 @@ def coletar_dados_cnpjs(url):
         clicar_checkbox(driver, " Com e-mail ")
 
     # Nesta parte eu inicio a pesquisa
-    pesquisar = wait.until(EC.element_to_be_clickable((By.XPATH, '//a[contains(@class, "button") and contains(@class, "is-success") and contains(@class, "is-medium") and text()="Pesquisar"]')))
+    pesquisar = wait.until(EC.element_to_be_clickable((By.XPATH, '//a[text()="Pesquisar"]')))
     driver.execute_script("arguments[0].scrollIntoView(true);", pesquisar)
     driver.execute_script("""
                 var iframes = document.getElementsByTagName('iframe');
@@ -512,18 +527,18 @@ def coletar_dados_cnpjs(url):
     hrefss = extrair_links(driver)
     hrefs = list(dict.fromkeys(hrefss))
     driver.quit()
+    print(hrefs)
     if hrefs:
         for href in hrefs:
             cont += 1
             processar_link(href, dados_cnpjs)
-            print(cont)
+            print(cont, flush=True)
             print(href)
-            if cont == 10:
-                break
     else: 
-        print("Nada consta.")
+        print("Nada consta.", flush=True)
     fim = datetime.now()
-    print(Fore.RED + f"Começo: {inicio} Fim: {fim}" + Style.RESET_ALL)
+    print(Fore.RED + f"Começo: {inicio} Fim: {fim}" + Style.RESET_ALL, flush=True)
+    driver.quit()
     return(dados_cnpjs)
 
 
@@ -534,9 +549,24 @@ def main():
         url = "https://casadosdados.com.br/solucao/cnpj/pesquisa-avancada"
         json_excel = coletar_dados_cnpjs(url)
         df = pd.DataFrame(json_excel)
-        # Salvar o DataFrame como um arquivo Excel
-        df.to_excel('extracao.xlsx', index=False)
-        print(json_excel)
+        # Obtém a data e hora atuais
+        now = datetime.now()
+
+        # Formata a data e hora como string no formato desejado
+        timestamp = now.strftime('%Y%m%d_%H%M%S')
+
+        # Cria o nome do arquivo
+        filename = f'extracao_{timestamp}.xlsx'
+
+        # Exemplo de impressão do nome do arquivo
+        print(f"Salvando o arquivo como {filename}", flush=True)
+
+        # Salva o DataFrame em um arquivo Excel com o nome gerado
+        df.to_excel(filename, index=False)
+
+        # Exemplo de impressão após o salvamento
+        # print("Arquivo salvo com sucesso.", flush=True)
+        print(json_excel, flush=True)
     except Exception as e:
-        print(e)
+        print(e, flush=True)
 main()
