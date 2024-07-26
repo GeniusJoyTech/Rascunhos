@@ -2,42 +2,57 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 from datetime import datetime
 from tkinter import ttk
-from colorama import init, Fore, Style
 
 import cloudscraper
 import json
 
 import re
 import tkinter as tk
-import time
+import signal
+import psutil
+import os
 import pandas as pd
 import sys
-# import atexit
-# Inicializa a colorama
-init(autoreset=True)
+import atexit
 
-# # Encerra os drivers, caso necessite
-# def fechar_driver():
-#     global driver
-#     if driver:
-#         driver.quit()
 
-# # Registrar a função de encerramento
-# atexit.register(fechar_driver)
+
+def close_chrome_processes():
+    # Percorrer todos os processos em execução
+    for proc in psutil.process_iter(['pid', 'name']):
+        # Verificar se o processo é o Chrome
+        if proc.info['name'] == 'chrome.exe':
+            try:
+                # Terminar o processo
+                proc.terminate()
+                # Esperar que o processo termine
+                proc.wait(timeout=3)
+            except psutil.NoSuchProcess:
+                pass
+            except psutil.AccessDenied:
+                pass
+
+def handle_exit(signal, frame):
+    close_chrome_processes()
+    os._exit(0)
+
+# Registrar manipuladores de sinal para eventos de término
+signal.signal(signal.SIGINT, handle_exit)
+signal.signal(signal.SIGTERM, handle_exit)
 
 # Função para inicializar o driver do navegador
 def inicializar_driver():
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # Descomente se necessário
+    options.add_argument("--headless")  # Descomente se necessário
     options.add_argument("--log-level=3")  # Reduz a quantidade de logs
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920x1080")
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36')
+    global driver 
     driver = webdriver.Chrome(options=options)
     return driver
 
@@ -51,7 +66,7 @@ def extrair_dados_gerais(payload, url):
     # Cabeçalhos da requisição
     headers = {
         "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        # "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
 
     # Criando o scraper
@@ -69,9 +84,9 @@ def extrair_dados_gerais(payload, url):
         print(f"Erro, {e}")
     # Verificando a resposta
     
-def processar_dados_gerais(dados_gerais):
+def gerar_link_busca(payload):
     # Adiciona uma nova chave 'link' a cada item em 'dados_gerais'
-    for item in dados_gerais['data']['cnpj']:
+    for item in payload['data']['cnpj']:
         cnpj = item['cnpj']
         razao_social = item['razao_social']
         
@@ -86,8 +101,7 @@ def processar_dados_gerais(dados_gerais):
         
         # Adiciona o resultado como um novo campo 'link' no item
         item['link'] = 'https://casadosdados.com.br/solucao/cnpj/' + link
-    
-    return dados_gerais
+    return payload
 
 def caixaDialogoUsuario():
     class FiltroDialog(tk.Toplevel):
@@ -138,46 +152,47 @@ def caixaDialogoUsuario():
             self.entry_data_ate = criar_linha("Data Até:", 9)
             self.entry_capital_de = criar_linha("Capital De:", 10)
             self.entry_capital_ate = criar_linha("Capital Até:", 11)
+            self.entry_pagina = criar_linha("Página:", 12)
 
             # Opções de seleção (ComboBox)
-            tk.Label(self.frame, text="Situação cadastral:").grid(row=12, column=0, padx=10, pady=5, sticky='w')
+            tk.Label(self.frame, text="Situação cadastral:").grid(row=13, column=0, padx=10, pady=5, sticky='w')
             self.combobox_selecao = ttk.Combobox(self.frame, values=["ATIVA", "BAIXADA", "INAPTA", "SUSPENSA", "NULA"], width=37)
-            self.combobox_selecao.grid(row=12, column=1, padx=10, pady=5)
+            self.combobox_selecao.grid(row=13, column=1, padx=10, pady=5)
 
             # Caixas de seleção
             self.check_cnae2 = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Incluir subCategoria de CNAEs.", variable=self.check_cnae2).grid(row=13, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Incluir subCategoria de CNAEs.", variable=self.check_cnae2).grid(row=14, column=1, padx=10, pady=5, sticky='w')
 
             self.check_somente_mei = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Somente MEI", variable=self.check_somente_mei).grid(row=14, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Somente MEI", variable=self.check_somente_mei).grid(row=14, column=2, padx=10, pady=5, sticky='w')
 
             self.check_excluir_mei = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Excluir MEI", variable=self.check_excluir_mei).grid(row=15, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Excluir MEI", variable=self.check_excluir_mei).grid(row=16, column=1, padx=10, pady=5, sticky='w')
 
             self.check_matriz = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Matriz", variable=self.check_matriz).grid(row=16, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Matriz", variable=self.check_matriz).grid(row=16, column=2, padx=10, pady=5, sticky='w')
 
             self.check_filial = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Filial", variable=self.check_filial).grid(row=17, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Filial", variable=self.check_filial).grid(row=18, column=1, padx=10, pady=5, sticky='w')
 
             self.check_com_telefone = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Com Telefone", variable=self.check_com_telefone).grid(row=18, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Com Telefone", variable=self.check_com_telefone).grid(row=18, column=2, padx=10, pady=5, sticky='w')
 
             self.check_fixo = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Telefone Fixo", variable=self.check_fixo).grid(row=19, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Telefone Fixo", variable=self.check_fixo).grid(row=20, column=1, padx=10, pady=5, sticky='w')
 
             self.check_celular = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Telefone Celular", variable=self.check_celular).grid(row=20, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Telefone Celular", variable=self.check_celular).grid(row=20, column=2, padx=10, pady=5, sticky='w')
 
             self.check_email = tk.BooleanVar()
-            tk.Checkbutton(self.frame, text="Com E-mail", variable=self.check_email).grid(row=21, column=1, padx=10, pady=5, sticky='w')
+            tk.Checkbutton(self.frame, text="Com E-mail", variable=self.check_email).grid(row=22, column=1, padx=10, pady=5, sticky='w')
 
             # Botões
             self.button_apply = tk.Button(self.frame, text="Aplicar", command=self.apply)
-            self.button_apply.grid(row=22, column=0, padx=10, pady=10)
+            self.button_apply.grid(row=23, column=0, padx=10, pady=10)
 
             self.button_cancel = tk.Button(self.frame, text="Cancelar", command=self.cancel)
-            self.button_cancel.grid(row=22, column=1, padx=10, pady=10)
+            self.button_cancel.grid(row=23, column=1, padx=10, pady=10)
 
         def apply(self):
             # Coleta os dados inseridos
@@ -204,7 +219,8 @@ def caixaDialogoUsuario():
                 "com_telefone": self.check_com_telefone.get(),
                 "fixo": self.check_fixo.get(),
                 "celular": self.check_celular.get(),
-                "email": self.check_email.get()
+                "email": self.check_email.get(),
+                "page": self.entry_pagina.get()
             }
             self.destroy()
 
@@ -217,6 +233,7 @@ def caixaDialogoUsuario():
     root.withdraw()  # Oculta a janela principal
     dialog = FiltroDialog(root)
     root.wait_window(dialog)  # Aguarda o fechamento da caixa de diálogo
+    
     return(dialog.resultado)
     
 #Define o Json para busca na Api
@@ -233,6 +250,7 @@ def jsonBusca(jsonBusca):
             "cep": [jsonBusca['cep']] if jsonBusca['cep'] else [],
             "ddd": [jsonBusca['ddd']] if jsonBusca['ddd'] else []
         },
+        "page": [jsonBusca['page']] if jsonBusca['page'] else 1,
         "range_query": {
             "data_abertura": {
                 "lte": jsonBusca['data_de'] if jsonBusca['data_de'] else None,
@@ -243,7 +261,6 @@ def jsonBusca(jsonBusca):
                 "gte": jsonBusca['capital_ate'] if jsonBusca['capital_ate'] else None
             }
         },
-        # "page": page,
         "extras": {
             "somente_mei": jsonBusca['somente_mei'] if jsonBusca['somente_mei'] else False,
             "excluir_mei": jsonBusca['excluir_mei'] if jsonBusca['excluir_mei'] else False,
@@ -269,72 +286,34 @@ def main():
         
         dadosParaBusca = caixaDialogoUsuario()
         jsonParaBusca = jsonBusca(dadosParaBusca)
-        pagina_atual = 1
-        max_paginas = 1
         payload = coletar_dados_cnpjs(url, jsonParaBusca)
         
-        num_resultado = int(payload['data']['count'])
-        if num_resultado > 20:
-            max_paginas = (num_resultado + 19) // 20
-            max_paginas = min(max_paginas, 10)
         
-        dataMenosTelefoneEEmail = []
-
-        while pagina_atual <= max_paginas:
-            print(f'Busca na página {pagina_atual}')
-            payload["page"] = pagina_atual        
+        payloadComLinks = gerar_link_busca(payload)
+        empresasSemContato = payloadComLinks['data']['cnpj']
+        empresasComContato = empresasSemContato.copy()
+        for item in empresasComContato:
+            link = item['link']
+            driver=inicializar_driver()
+            wait = WebDriverWait(driver, 10)
+            abrir_pagina(driver, link)
+            respostaExcept='Não encontrado pelo extrator.'
             try:
-                coletados = coletar_dados_cnpjs(url, payload)
-                coletadosProcessados = processar_dados_gerais(coletados)
-                cnpjsGerais = coletadosProcessados['data']['cnpj']
-                dataMenosTelefoneEEmail.append(cnpjsGerais)
-            except:            
-                time.sleep(5)
-                try:
-                    coletados = coletar_dados_cnpjs(url, payload)
-                    coletadosProcessados = processar_dados_gerais(coletados)
-                    cnpjsGerais = coletadosProcessados['data']['cnpj']
-                    
-                    dataMenosTelefoneEEmail.append(cnpjsGerais)
-                except:            
-                    print(f'Página {pagina_atual} não encontrada.')
-                    print(f'Seguirei para a busca na próxima página, caso tenha.')
-                    time.sleep(15)
-            pagina_atual +=1
-        empresas = []
-        empresaComContato = []
-        try:
-            dataMenosTelefoneEEmail = [item for sublist in dataMenosTelefoneEEmail for item in sublist]
-            cont = 1
-            for empresaSemContato in dataMenosTelefoneEEmail:
-                print(empresaComContato)
-                cont +=1
-                link = empresaSemContato['link']
-                
-                empresaComContato = empresaSemContato.copy()
-                driver = inicializar_driver()
-                wait = WebDriverWait(driver, 10)
-                abrir_pagina(driver, link)
-                try:                   
-                    email = wait.until(EC.presence_of_element_located((By.XPATH, '//label[contains(text(), "Email:")]/following-sibling::p[@class="has-text-weight-bold"]'))).text
-                    print(email)
-                except:
-                    email = 'Não encontrado pelo extrator.'
-                try:
-                    telefone = wait.until(EC.presence_of_element_located((By.XPATH, '//label[contains(text(), "Telefone:")]/following-sibling::p[@class="has-text-weight-bold"]'))).text
-                    print(telefone)
-                except:
-                    telefone = 'Não encontrado pelo extrator.'
-                
-                empresaComContato['email'] = email
-                empresaComContato['telefone'] = telefone
-                empresas.append(empresaComContato)
-                driver.quit()
-        except:
-            if driver:
-                driver.quit()
+                email = wait.until(EC.presence_of_element_located((By.XPATH, '//label[contains(text(), "Email:")]/following-sibling::p[@class="has-text-weight-bold"]'))).text
+            except:
+                email = respostaExcept
+            try:
+                telefone = wait.until(EC.presence_of_element_located((By.XPATH, '//label[contains(text(), "Telefone:")]/following-sibling::p[@class="has-text-weight-bold"]'))).text
+            except:
+                telefone = respostaExcept
+                print(telefone)
+            item['email'] = email
+            item['telefone'] = telefone
+            driver.quit()
+        if driver:
+            driver.quit  
         
-        df = pd.DataFrame(empresas)
+        df = pd.DataFrame(empresasComContato)
         # Obtém a data e hora atuais
         now = datetime.now()
 
@@ -344,6 +323,9 @@ def main():
         # Cria o nome do arquivo
         filename = f'extracao_{timestamp}.xlsx'
 
+        #Encerrando Processos do chrome
+        close_chrome_processes()
+        
         # Exemplo de impressão do nome do arquivo
         print(f"Salvando o arquivo como {filename}", flush=True)
 
