@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+.vw80{
+  width: 80vw;
+}
+
+.bordSolid1px{
+  border: solid 1px;
+}
+
+.prc100{
+  width: 100%;
+}
+.vh80{
+  height: 80vh;
+}
+
+.navbar {
+  width: 100%;
+  height: auto;
+  background-color: green;
+}
+
+.flex {
+  display: flex;
+}
+
+.fixo {
+  position: fixed;
+}
+
+.flexWrap {
+  flex-wrap: wrap;
+}
+.flexCol{
+  flex-direction: column;
+}
+
+.justBet {
+  justify-content: space-between;
+}
+
+.justCen {
+  justify-content: center;
+}
+
+.justEnd {
+  justify-content: flex-end;
+}
+
+.justAro {
+  justify-content: space-around;
+}
+
+.aliCenter {
+  align-items: center;
+}
