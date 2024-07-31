@@ -1,15 +1,30 @@
-import React, { useState } from "react";
-
-export default function Carrinho({ exibir, setExibir }) {
-
+import React from "react";
+export default function Carrinho({ exibir, setExibir, items, remover }) {
   const fecharCarrinho = () => {
     setExibir(false);
   };
+  const agruparItemsCarrinho = (items) => {
+    const groupedItems = items.reduce((acc, item) => {
+      const foundItem = acc.find(accItem => accItem.id === item.id);
+      if (foundItem) {
+        if (foundItem.mod === "Físico") {
+          foundItem.quantity += 1;
+          foundItem.totalPrice += parseFloat(item.price);
+        }
+      } else {
+        acc.push({ ...item, quantity: 1, totalPrice: parseFloat(item.price) });
+      }
+      return acc;
+    }, []);
+    return groupedItems;
+  };
+
+  const itemsAgrupados = agruparItemsCarrinho(items);
 
   return (
     <>
       {exibir && (
-        <div className="carrinho">
+        <div className="carrinho opact_easeInOut_efect_05s">
           <div className="flex justEnd">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -26,6 +41,27 @@ export default function Carrinho({ exibir, setExibir }) {
             <h2 style={{ height: 'auto' }}>Carrinho de Compras</h2>
           </div>
           <hr className="line" />
+          <div id="conteudoCarrinho" className="prc100">
+            {/* Conteúdo do carrinho */}
+
+            {
+              items && items.length > 0 ?
+                itemsAgrupados.map((item) => (
+                  <div>
+                    <p> {item.cat}  {item.mod}: {item.title} <br />Valor: <b>$</b>{item.totalPrice.toFixed(2)}</p> Quantidade: {item.quantity} <button onClick={() => remover(item.id)}>Remover</button>
+                    <br /><br />
+                  </div>
+                ))
+                :
+                <div className="flex prc100 prcH100 flex aliCenter justCen scrolY">
+                  <p>Nada no carrinho!</p>
+                </div>
+            }
+          </div>
+          <hr className="line" />
+          <div className="prc100 flex justCen">
+            <button>Finalizar Compra</button>
+          </div>
         </div>
       )}
     </>

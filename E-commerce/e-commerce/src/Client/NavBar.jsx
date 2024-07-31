@@ -5,12 +5,11 @@ export default function NavBar({setExibirCarrinho}) {
       };
     return (
         <div className="navbar flex justAro aliCenter">
-            <h1 id="titulo">Loja Weriton</h1>
+            <h1 className="no-break">Loja Weriton</h1>
             <div id="navegadores" className="flex justBet">
-                <a>Início</a>
-                <a>Loja</a>
-                <a>Cursos</a>
-                <a>Livros</a>
+                <a href="#inicio">Início</a>
+                <a href="#loja">Loja</a>
+                <a href="#sobre">Sobre Mim</a>
                 <a onClick={abrirCarrinho}>Carrinho</a>
             </div>
         </div>

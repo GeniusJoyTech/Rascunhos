@@ -53,6 +53,11 @@
   height: 0.1px;
 }
 
+html {
+  scroll-behavior: smooth;
+  /* Adiciona um efeito de rolagem suave */
+}
+
 button {
   width: auto;
   height: auto;
@@ -61,6 +66,10 @@ button {
   margin: 4px;
   background-color: var(--c06);
   cursor: pointer;
+}
+
+a {
+  text-decoration: none;
 }
 
 button:hover {
@@ -104,8 +113,13 @@ body {
   padding-right: 40px;
 }
 
+.navbar a{
+  color: var(--c02)
+}
+
 .carousel {
   position: relative;
+  /* background-color: #007bff; */
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -120,16 +134,19 @@ body {
 }
 
 .carousel-item {
-  width: 100%;
-  height: 100%;
+  opacity: 0;
   position: absolute;
-  left: 0;
-  top: 0;
-  display: none;
 }
 
-.carousel-item.active {
-  display: block;
+.opact_easeInOut_efect_05s {
+  transition: opacity 0.5s ease-in-out;
+  width: 100%;
+  /* Garantir que a imagem ocupe o espaço do contêiner */
+
+}
+
+.opact_easeInOut_efect_05s.active {
+  opacity: 1;
 }
 
 .carousel-item img {
@@ -200,6 +217,10 @@ body {
 
 .justAro {
   justify-content: space-around;
+}
+
+.no-break {
+  white-space: nowrap;
 }
 
 .loja-item {
@@ -283,6 +304,14 @@ body {
   width: 100%;
 }
 
+.prcH100 {
+  height: 100%;
+}
+
+.scrollY {
+  overflow-y: scroll;
+}
+
 .prc50 {
   width: 50%;
 }
@@ -304,7 +333,47 @@ body {
   margin: 20px 0;
 }
 
+.carrinho {
+  display: flex;
+  flex-direction: column;
+  /* Coloca os filhos em coluna */
+  height: 100vh;
+  /* Ocupa a altura total da viewport */
+}
+
+.carrinho>.flex:not(.prc100) {
+  /* Caso queira garantir que outros elementos, como o título e o botão, não ocupem mais espaço do que o necessário */
+  flex-shrink: 0;
+  /* Não encolher */
+}
+
+#conteudoCarrinho {
+  flex-grow: 1;
+  /* Ocupa o espaço restante */
+  overflow-y: auto;
+  /* Adiciona barra de rolagem se necessário */
+}
+
+.prc100 {
+  /* Garantir que o botão ocupe a largura total disponível */
+  margin-top: auto;
+  /* Faz com que o botão fique na parte inferior */
+}
+
+#filtro_busca {
+  width: 40%;
+}
+
+#filtro_outros {
+  width: 60%;
+}
+
 @media (min-width: 769px) {
+
+  #filtro {
+    height: 56px;
+  }
+
   .carrinho {
     position: fixed;
     top: 0;
@@ -318,7 +387,7 @@ body {
     z-index: 1000;
     /* Valor alto para garantir que fique acima de outros elementos */
   }
-  
+
   .sticky-div {
     height: 50px;
     top: 120px;
@@ -342,9 +411,32 @@ body {
   #navegadores {
     width: 50%;
   }
+
+  h_auto {
+    height: auto;
+  }
 }
 
 @media (max-width: 768px) {
+  h1 {
+    font-size: 16px;
+  }
+
+  #filtro {
+    height: 120px;
+    flex-direction: column;
+
+    font-size: 12px;
+  }
+
+  #filtro_busca {
+    width: 100%;
+  }
+
+  #filtro_outros {
+    width: 100%;
+  }
+
   .carrinho {
     position: fixed;
     top: 0;
@@ -363,6 +455,10 @@ body {
     height: 120px;
   }
 
+  .carousel {
+    margin-top: 120px;
+  }
+
   .sticky-div {
     height: 50px;
     top: 120px;
@@ -370,9 +466,6 @@ body {
     color: var(--c02);
   }
 
-  .carousel {
-    margin-top: 120px;
-  }
 
   #titulo {
     width: 30%;
@@ -383,14 +476,29 @@ body {
   }
 }
 
+@media (max-width: 570px) {
+  h1 {
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 425px) {
+  h1 {
+    font-size: 12px;
+  }
+
+  #filtro {
+    height: 120px;
+  }
+
   .navbar {
-    height: 80px;
+    height: 120px;
   }
 
   .carousel {
     margin-top: 80px;
   }
+
   .sticky-div {
     height: 50px;
     top: 80px;
@@ -408,7 +516,10 @@ body {
   }
 }
 
-@media (min-width: 375px) {
+@media (max-width: 375px) {
+  h1 {
+    font-size: 12px;
+  }
 }
 
-@media (min-width: 320px) {}
+@media (max-width: 320px) {}

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Loja({items}) {
+export default function Loja({items, adcCarrinho}) {
   if (!items || items.length === 0) {
     return (
       <div style={{height:"95vh"}} className="flex aliCenter justCen"><p>Não há itens à venda.</p></div>
@@ -19,7 +19,7 @@ export default function Loja({items}) {
                 id={`card-${item.id}`}
               />
               <label htmlFor={`card-${item.id}`} className="label-collapse">
-                {item.title}
+              {item.cat} {item.mod}: {item.title}
               </label>
               <div className="card-content">
                 <p>{item.description}</p>
@@ -32,7 +32,7 @@ export default function Loja({items}) {
                   {item.price}
                 </p>
               </div>
-              <button>Adicionar ao carrinho</button>
+              <button onClick={() => adcCarrinho(item)}>Adicionar ao carrinho</button>
             </div>
           </div>
         </div>
