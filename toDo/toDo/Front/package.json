@@ -1,0 +1,14 @@
+{
+  "name": "simplifica-tarefas",
+  "version": "1.0.0",
+  "description": "Quadro kaban para tarefas do escritório",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gabriel Jesus",
+  "license": "ISC",
+  "dependencies": {
+    "vite": "^6.0.1"
+  }
+}
